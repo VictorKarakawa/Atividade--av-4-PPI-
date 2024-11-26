@@ -18,9 +18,8 @@ let produtos = [];
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
-    res.redirect('/login');
-  });
-  
+  res.redirect('/login');
+});
 
 app.get('/login', (req, res) => {
   res.render('login');
@@ -65,6 +64,6 @@ app.get('/logout', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000');
+app.listen(process.env.PORT || 3000, () => {
+  console.log('Servidor rodando na porta ' + (process.env.PORT || 3000));
 });
