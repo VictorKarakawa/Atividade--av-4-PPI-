@@ -15,7 +15,12 @@ app.use(session({
 
 let produtos = [];
 
-app.set('view engine', 'ejs');
+app.get('/', (req, res) => {
+  if (!req.session.usuario) {
+    return res.redirect('/login');
+  }
+  res.redirect('/tabela');
+});
 
 app.get('/login', (req, res) => {
   res.render('login');
@@ -29,23 +34,33 @@ app.post('/login', (req, res) => {
 
 app.get('/cadastro', (req, res) => {
   if (!req.session.usuario) return res.redirect('/login');
-  res.render('cadastro', {
-    usuario: req.session.usuario,
-    ultimoAcesso: req.cookies.ultimoAcesso || 'Nenhum acesso registrado.'
-  });
+  res.render('cadastro');
 });
 
 app.post('/cadastro', (req, res) => {
   if (!req.session.usuario) return res.redirect('/login');
+
   const { codigoBarras, descricao, precoCusto, precoVenda, validade, estoque, fabricante } = req.body;
-  const produto = { codigoBarras, descricao, precoCusto, precoVenda, validade, estoque, fabricante };
+
+  const produto = {
+    codigoBarras,
+    descricao,
+    precoCusto: parseFloat(precoCusto),
+    precoVenda: parseFloat(precoVenda),
+    validade,
+    estoque,
+    fabricante
+  };
+
   produtos.push(produto);
   res.redirect('/tabela');
 });
 
 app.get('/tabela', (req, res) => {
   if (!req.session.usuario) return res.redirect('/login');
+  
   const ultimoAcesso = req.cookies.ultimoAcesso || 'Nenhum acesso registrado.';
+  
   res.render('tabela', {
     produtos,
     usuario: req.session.usuario,
